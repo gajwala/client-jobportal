@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../utils/axiosInstance";
-import JobCard from "./JobCard";
-import Loader from "./Loader";
+import axiosInstance from "../../utils/axiosInstance";
+import JobCard from "../common/JobCard";
+import Loader from "../common/Loader";
 import { FixedSizeList as List } from "react-window";
 
 const JobListing = () => {
@@ -35,6 +35,8 @@ const JobListing = () => {
     setFilters({ skill: "", location: "" });
   };
 
+  const handleJobClick = () => {};
+
   const filteredJobs = jobs.filter((job) => {
     const matchesSkill =
       !filters.skill ||
@@ -49,14 +51,18 @@ const JobListing = () => {
 
   const Row = ({ index, style }) => (
     <div style={{ ...style, padding: "0 1rem" }}>
-      <JobCard key={filteredJobs[index]._id} {...filteredJobs[index]} />
+      <JobCard
+        key={filteredJobs[index]._id}
+        {...filteredJobs[index]}
+        onClick={(job) => handleJobClick(job)}
+      />
     </div>
   );
 
   return (
-    <div className="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen p-4">
+    <div className="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen p-4 w-full">
       {loading && <Loader />}
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full mx-auto">
         <h1 className="text-2xl font-bold mb-4">Job Listings</h1>
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <input

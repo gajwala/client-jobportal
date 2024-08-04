@@ -1,18 +1,16 @@
-// src/components/AuthenticatedLayout.js
-
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import Sidebar from "./common/Sidebar";
+import Navbar from "./common/Navbar";
+import Footer from "./common/Footer";
 
 const AuthenticatedLayout = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="grow ml-16 md:ml-64 h-full bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+      <div className="flex flex-col grow ml-16 md:ml-64 min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white transition-all duration-300">
         <Navbar />
-        <div>
+        <div className="flex-grow flex items-center justify-center p-4">
           <Outlet />
         </div>
         <Footer />

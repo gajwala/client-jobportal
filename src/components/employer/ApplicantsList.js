@@ -2,23 +2,30 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import Loader from "../common/Loader";
 
 const ApplicantsList = ({ job, onBack }) => {
   const [applicants, setApplicants] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const viewProfilehandler = () => {
-    navigate("/profile");
+  console.log(applicants);
+  const viewProfilehandler = (id) => {
+    navigate(`/profile/${id}`);
   };
   useEffect(() => {
-    axiosInstance
-      .get(`/applications/${job._id}`) // Fetch applicants for the selected job
-      .then((response) => setApplicants(response.data))
-      .catch((err) => console.error(err));
-  }, [job._id]);
+    setLoading(true);
+    if (job?._id) {
+      axiosInstance
+        .get(`/applications/${job._id}`) // Fetch applicants for the selected job
+        .then((response) => setApplicants(response.data))
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
+  }, [job?._id]);
 
   return (
     <div>
+      {loading && <Loader />}
       <button onClick={onBack} className="mb-4 text-blue-500 hover:underline">
         Back to Jobs
       </button>
@@ -37,11 +44,10 @@ const ApplicantsList = ({ job, onBack }) => {
               />
               <div>
                 <h3 className="text-lg font-semibold">
-                  {applicant.userId.role} - {applicant.userId.name || "sara"}
+                  {applicant.userId.role} - {applicant.userId.name}
                 </h3>
                 <p>
-                  {applicant.userId.email} |{" "}
-                  {applicant.userId.phone || "876876687"}
+                  {applicant.userId.email} | {applicant.userId.contactInfo}
                 </p>
                 {applicant.userId.skills.length > 0 && (
                   <p>Skills: {applicant.userId.skills.join(", ")}</p>
@@ -50,7 +56,7 @@ const ApplicantsList = ({ job, onBack }) => {
               <button
                 type="button"
                 className="py-2 px-4 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 absolute right-8"
-                onClick={viewProfilehandler}
+                onClick={() => viewProfilehandler(applicant?.userId?._id)}
               >
                 View Profile
               </button>

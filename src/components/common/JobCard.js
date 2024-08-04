@@ -10,6 +10,7 @@ function JobCard({
   updatedAt,
   applications,
   onClick,
+  descriptionFile,
 }) {
   const userRole = JSON.parse(localStorage.getItem("user"))?.role;
 
@@ -43,12 +44,24 @@ function JobCard({
               ? `${applications.length} applicant(s)`
               : "No applicants"}
           </p>
-          <button
-            onClick={onClick}
-            className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-10 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900"
-          >
-            {userRole === "employer" ? "Check Applicants" : "Apply"}
-          </button>
+          <div className="flex flex-col" style={{ alignItems: "center" }}>
+            <button
+              onClick={onClick}
+              className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-10 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900"
+            >
+              {userRole === "employer" ? "Check Applicants" : "Apply"}
+            </button>
+            {descriptionFile && (
+              <a
+                href={descriptionFile}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300 mt-2"
+              >
+                download
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>

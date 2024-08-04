@@ -14,3 +14,12 @@ export const loginUser = (credentials) => async (dispatch) => {
     throw new Error("Login failed");
   }
 };
+
+export const registerUser = (credentials) => async (dispatch) => {
+  try {
+    const response = await axiosInstance.post("/users/register", credentials);
+    return response.data;
+  } catch (error) {
+    throw new Error("Registration failed failed");
+  }
+};

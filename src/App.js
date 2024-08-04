@@ -16,26 +16,26 @@ import {
   ApplicantsList,
   EmployerJobs,
   ErrorBoundary,
+  ApplicantProfile,
 } from "./components";
 
 const App = () => {
-  const user = JSON.parse(localStorage.getItem("user")); // Adjust based on your state structure
-  const isAuthenticated = !!user; // Adjust based on your auth logic
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const isAuthenticated = !!user;
 
   return (
     <Router>
       <ErrorBoundary>
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-
-          {/* Authenticated Routes */}
+          <Route path="*" element={<Navigate to="/" />} />
           {isAuthenticated && (
             <Route element={<AuthenticatedLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<UserProfile />} />
-
+              <Route path="/profile/:id" element={<ApplicantProfile />} />
               {user.role === "freelancer" && (
                 <Route path="/jobListing" element={<JobListing />} />
               )}
@@ -50,9 +50,6 @@ const App = () => {
                   />
                 </>
               )}
-
-              {/* Wildcard Route */}
-              <Route path="*" element={<Navigate to="/" />} />
             </Route>
           )}
         </Routes>

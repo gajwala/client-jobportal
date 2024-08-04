@@ -1,36 +1,33 @@
 import React from "react";
 import {
-  FaTachometerAlt,
-  FaUser,
-  FaBriefcase,
-  FaPlus,
-  FaUsers,
-  FaSignOutAlt,
-} from "react-icons/fa";
+  BiHome,
+  BiLogOut,
+  BiListUl,
+  BiBriefcase,
+  BiEdit,
+} from "react-icons/bi";
 
-const sidebarRoutes = (role) => [
-  { path: "/dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
-  { path: "/profile", label: "Profile", icon: <FaUser /> },
-  ...(role === "freelancer"
-    ? [{ path: "/jobListing", label: "Job Listings", icon: <FaBriefcase /> }]
-    : []),
-  ...(role === "employer"
-    ? [
-        { path: "/employer-jobs", label: "My Jobs", icon: <FaBriefcase /> },
-        { path: "/create-job", label: "Post Job", icon: <FaPlus /> },
-        {
-          path: "/employer/job/:jobId/applicants",
-          label: "Applicants",
-          icon: <FaUsers />,
-        },
-      ]
-    : []),
-  {
-    path: "/logout",
-    label: "Logout",
-    icon: <FaSignOutAlt />,
-    action: "logout",
-  },
-];
+const sidebarRoutes = (role) => {
+  const commonRoutes = [
+    { path: "/dashboard", label: "Dashboard", icon: <BiHome /> },
+    { path: "/profile", label: "Update Profile", icon: <BiEdit /> },
+    { action: "logout", label: "Logout", icon: <BiLogOut /> },
+  ];
+
+  const freelancerRoutes = [
+    { path: "/jobListing", label: "Job Listing", icon: <BiListUl /> },
+  ];
+
+  const employerRoutes = [
+    { path: "/employer-jobs", label: "My Jobs", icon: <BiBriefcase /> },
+    { path: "/create-job", label: "Create Job", icon: <BiEdit /> },
+  ];
+
+  return role === "freelancer"
+    ? [...commonRoutes, ...freelancerRoutes]
+    : role === "employer"
+    ? [...commonRoutes, ...employerRoutes]
+    : commonRoutes;
+};
 
 export default sidebarRoutes;
