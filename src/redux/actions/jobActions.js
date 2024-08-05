@@ -49,8 +49,29 @@ export const fetchEmployerJobs = (userId) => async (dispatch) => {
   dispatch({ type: "FETCH_JOBS_REQUEST" });
   try {
     const response = await axiosInstance.get(`/jobs/postedBy/${userId}`);
-    dispatch({ type: "FETCH_EMPLOYER_JOBS_SUCCESS", payload: response.data });
+    dispatch({
+      type: "FETCH_EMPLOYER_JOBS_SUCCESS",
+      payload: response.data.jobs,
+    });
   } catch (error) {
     dispatch({ type: "FETCH_JOBS_FAILURE", payload: error.message });
+  }
+};
+
+export const fetchApplicants = (jobId) => async (dispatch) => {
+  dispatch({ type: "FETCH_APPLICANTS_REQUEST" });
+
+  try {
+    const response = await axiosInstance.get(`/applications/${jobId}`);
+    console.log(response.data);
+    dispatch({
+      type: "FETCH_APPLICANTS_SUCCESS",
+      payload: response.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "FETCH_APPLICANTS_FAILURE",
+      payload: error.message,
+    });
   }
 };

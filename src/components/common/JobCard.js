@@ -1,6 +1,8 @@
 import React from "react";
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchApplicants } from "../../redux/actions/jobActions";
 
 function JobCard({
   _id,
@@ -17,11 +19,25 @@ function JobCard({
   isApplied = false,
 }) {
   const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userRole = user?.role;
 
   if (userRole !== "employer") {
     isApplied = appliedJobs.some((appliedJob) => appliedJob._id === _id);
   }
+
+  const getApplicantsLength = () => {
+    if (applications?.length) {
+      return `${applications.length} applicant(s)`;
+    }
+    return null;
+  };
+
+  const checkApplicantHandler = (jobId) => {
+    dispatch(fetchApplicants(jobId));
+    navigate(`/employer/job/${jobId}/applicants`);
+  };
 
   return (
     <div className="mb-6 lg:mb-8 w-full">
@@ -47,22 +63,27 @@ function JobCard({
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4 md:mt-0 w-full md:w-2/5">
           <p className="text-gray-500 dark:text-gray-400 text-sm md:text-base lg:text-base w-full md:w-auto">
             Posted {moment(updatedAt).fromNow()} <br />
-            {applications?.length > 0
-              ? `${applications.length} applicant(s)`
-              : "No applicants"}
+            {userRole === "employer" && getApplicantsLength()}
           </p>
           <div className="flex flex-col items-center w-full md:w-auto">
-            <button
-              onClick={onClick}
-              className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900 transition-colors duration-300 lg:px-6 lg:py-3 lg:text-base w-full md:w-auto"
-              disabled={isApplied}
-            >
-              {userRole === "employer"
-                ? "Check Applicants"
-                : isApplied
-                ? "APPLIED"
-                : "Apply"}
-            </button>
+            {userRole === "employer" && (
+              <button
+                onClick={() => checkApplicantHandler(_id)}
+                className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900 transition-colors duration-300 lg:px-6 lg:py-3 lg:text-base w-full md:w-auto"
+              >
+                Check Applicants
+              </button>
+            )}
+            {userRole !== "employer" && (
+              <button
+                onClick={onClick}
+                className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900 transition-colors duration-300 lg:px-6 lg:py-3 lg:text-base w-full md:w-auto"
+                disabled={isApplied}
+              >
+                {isApplied ? "APPLIED" : "Apply"}
+              </button>
+            )}
+
             {descriptionFile && (
               <a
                 href={descriptionFile}

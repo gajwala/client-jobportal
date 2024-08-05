@@ -5,15 +5,16 @@ const initialState = {
   loading: false,
   error: null,
   page: 1,
+  applicants: [],
   hasMore: true,
 };
 
 const jobsReducer = (state = initialState, action) => {
-  console.log(action.payload?.jobs);
   switch (action.type) {
     case "FETCH_JOBS_REQUEST":
     case "FETCH_APPLIED_JOBS_REQUEST":
     case "APPLY_TO_JOB_REQUEST":
+    case "FETCH_APPLICANTS_REQUEST":
       return {
         ...state,
         loading: true,
@@ -44,9 +45,16 @@ const jobsReducer = (state = initialState, action) => {
         ),
         loading: false,
       };
+    case "FETCH_APPLICANTS_SUCCESS":
+      return {
+        ...state,
+        applicants: action.payload,
+        loading: false,
+      };
     case "FETCH_JOBS_FAILURE":
     case "FETCH_APPLIED_JOBS_FAILURE":
     case "APPLY_TO_JOB_FAILURE":
+    case "FETCH_APPLICANTS_FAILURE":
       return {
         ...state,
         error: action.payload,

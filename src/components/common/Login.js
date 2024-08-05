@@ -13,26 +13,25 @@ const Login = () => {
   });
 
   const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    setIsSubmitting(true);
+    setLoading(true);
+
     e.preventDefault();
     try {
-      setLoading(true);
       await dispatch(
         loginUser({ email: formData.email, password: formData.password })
       );
       setLoading(false);
       navigate("/dashboard");
     } catch (err) {
-      setIsSubmitting(false);
-      setLoading(true);
       setError("Invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,7 +41,7 @@ const Login = () => {
       <div className="login-overlay"></div>
       <form className="login-form" onSubmit={handleSubmit}>
         <h1 className="login-title">Login</h1>
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="text-red-700 mb-3">{error}</div>}
         <label htmlFor="email" className="login-label">
           Email
         </label>
@@ -67,7 +66,7 @@ const Login = () => {
           onChange={handleChange}
           required
         />
-        <button type="submit" className="login-button" disabled={isSubmitting}>
+        <button type="submit" className="login-button">
           Login
         </button>
         <div className="signup-link-container">

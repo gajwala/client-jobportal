@@ -7,7 +7,7 @@ import { fetchEmployerJobs } from "../../redux/actions/jobActions";
 const EmployerJobs = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { jobs, loading } = useSelector((state) => state.jobs);
+  const { employerJobs, loading } = useSelector((state) => state.jobs);
 
   useEffect(() => {
     if (user?._id) {
@@ -20,8 +20,8 @@ const EmployerJobs = () => {
       {loading && <Loader />}
       <div className="w-full max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">My Job Postings</h1>
-        {jobs.length > 0 ? (
-          jobs.map((job) => <JobCard key={job._id} {...job} />)
+        {employerJobs.length > 0 ? (
+          employerJobs.map((job) => <JobCard key={job._id} {...job} />)
         ) : (
           <p>No jobs found.</p>
         )}

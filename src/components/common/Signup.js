@@ -13,14 +13,12 @@ const Signup = () => {
     role: "freelancer",
   });
   const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    setIsSubmitting(true);
     e.preventDefault();
     try {
       setLoading(true);
@@ -77,7 +75,7 @@ const Signup = () => {
           <option value="freelancer">Freelancer</option>
           <option value="employer">Employer</option>
         </select>
-        <button type="submit" className="signup-button" disabled={isSubmitting}>
+        <button type="submit" className="signup-button">
           Signup
         </button>
         <div className="login-link-container">

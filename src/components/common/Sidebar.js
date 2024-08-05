@@ -2,21 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BiMenu } from "react-icons/bi";
 import sidebarRoutes from "../../utils/sidebarRoutes"; // Import the routes configuration
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/actions/userActions";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+
   const { user } = useSelector((state) => state.user);
   const [activeTab, setActiveTab] = useState("");
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    dispatch(logout());
-    navigate("/");
-  };
 
   const routes = sidebarRoutes(user?.role);
 
@@ -54,10 +47,8 @@ const Sidebar = () => {
                 : "hover:bg-blue-600 hover:text-white"
             } ${
               activeTab === route.path ? "bg-blue-600 text-white shadow-lg" : ""
-            } ${route.action === "logout" ? "absolute bottom-1" : ""}`}
-            onClick={() =>
-              route.action === "logout" ? handleLogout() : navigateTo(route)
-            }
+            } `}
+            onClick={() => navigateTo(route)}
           >
             <span
               className={`text-xl md:text-2xl ${
