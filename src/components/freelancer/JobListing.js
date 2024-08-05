@@ -1,5 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { FixedSizeList as List } from "react-window";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import JobCard from "../common/JobCard";
 import Loader from "../common/Loader";
@@ -11,10 +16,13 @@ import {
 
 const JobListing = () => {
   const [filters, setFilters] = useState({ skill: "", location: "" });
+  const observer = useRef();
   const { user } = useSelector((state) => state.user);
+  const { jobs, appliedJobs, loading, page, hasMore } = useSelector(
+    (state) => state.jobs
+  );
   const userRole = user?.role;
   const dispatch = useDispatch();
-  const { jobs, appliedJobs, loading } = useSelector((state) => state.jobs);
 
   useEffect(() => {
     dispatch(fetchJobs());
@@ -35,44 +43,51 @@ const JobListing = () => {
     setFilters({ skill: "", location: "" });
   };
 
-  const handleJobClick = async (job) => {
+  const handleJobClick = (job) => {
     if (userRole === "freelancer" && !job.applied) {
       dispatch(applyToJob(job._id, user._id));
     }
   };
 
-  const filteredJobs = useMemo(
-    () =>
-      jobs.filter((job) => {
-        const matchesSkill =
-          !filters.skill ||
-          job.skills.some((skill) =>
-            skill.toLowerCase().includes(filters.skill.toLowerCase())
-          );
-        const matchesLocation =
-          !filters.location ||
-          job.location.toLowerCase().includes(filters.location.toLowerCase());
-        return matchesSkill && matchesLocation;
-      }),
-    [jobs, filters]
-  );
+  const filteredJobs = useMemo(() => {
+    return jobs.filter((job) => {
+      const matchesSkill =
+        !filters.skill ||
+        job.skills.some((skill) =>
+          skill.toLowerCase().includes(filters.skill.toLowerCase())
+        );
+      const matchesLocation =
+        !filters.location ||
+        job.location.toLowerCase().includes(filters.location.toLowerCase());
+      return matchesSkill && matchesLocation;
+    });
+  }, [jobs, filters]);
 
-  const Row = ({ index, style }) => (
-    <div style={{ ...style, padding: "0 1rem" }}>
-      <JobCard
-        key={filteredJobs[index]._id}
-        {...filteredJobs[index]}
-        onClick={() => handleJobClick(filteredJobs[index])}
-        appliedJobs={appliedJobs}
-      />
-    </div>
+  const loadMoreJobs = useCallback(() => {
+    if (hasMore && !loading) {
+      dispatch(fetchJobs(page + 1));
+    }
+  }, [dispatch, hasMore, loading, page]);
+
+  const lastJobElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMoreJobs();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, loadMoreJobs, hasMore]
   );
 
   return (
-    <div className="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen p-4 w-full">
+    <div className="flex-grow p-4">
       {loading && <Loader />}
-      <div className="w-full mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Job Listings</h1>
+      <div className="w-full max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6">Job Listings</h1>
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <input
             type="text"
@@ -98,17 +113,35 @@ const JobListing = () => {
           </button>
         </div>
         {filteredJobs.length > 0 ? (
-          <List
-            height={window.innerHeight}
-            itemCount={filteredJobs.length}
-            itemSize={200}
-            width="100%"
-          >
-            {Row}
-          </List>
+          <div className="grid grid-cols-1 gap-4">
+            {filteredJobs.map((job, index) => {
+              if (filteredJobs.length === index + 1) {
+                return (
+                  <div ref={lastJobElementRef} key={job._id}>
+                    <JobCard
+                      {...job}
+                      onClick={() => handleJobClick(job)}
+                      appliedJobs={appliedJobs}
+                    />
+                  </div>
+                );
+              } else {
+                return (
+                  <div key={job._id}>
+                    <JobCard
+                      {...job}
+                      onClick={() => handleJobClick(job)}
+                      appliedJobs={appliedJobs}
+                    />
+                  </div>
+                );
+              }
+            })}
+          </div>
         ) : (
           <p>No jobs found.</p>
         )}
+        {loading && <Loader />}
       </div>
     </div>
   );
