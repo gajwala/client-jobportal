@@ -3,7 +3,9 @@
 import { LOGIN_SUCCESS, LOGOUT, UPDATE_PROFILE } from "../actions/userActions";
 
 const initialState = {
-  user: null, // This will hold the user information
+  user: null,
+  token: null,
+  isAuthenticated: false,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -11,12 +13,16 @@ const userReducer = (state = initialState, action) => {
     case LOGIN_SUCCESS:
       return {
         ...state,
-        user: action.payload,
+        user: action.payload.user,
+        token: action.payload.token,
+        isAuthenticated: true,
       };
     case LOGOUT:
       return {
         ...state,
         user: null,
+        isAuthenticated: false,
+        token: null,
       };
     case UPDATE_PROFILE:
       return {

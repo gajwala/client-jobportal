@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const JobCreateStepper = () => {
   const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.user);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [addSkill, setAddSkill] = useState("");
@@ -59,7 +60,6 @@ const JobCreateStepper = () => {
       if (file) data.append("descriptionFile", file);
 
       try {
-        const token = localStorage.getItem("token");
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -1,27 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState, useMemo } from "react";
 import { FixedSizeList as List } from "react-window";
-import { useDispatch, useSelector } from "react-redux";
 import JobCard from "../common/JobCard";
 import Loader from "../common/Loader";
-import {
-  fetchJobs,
-  fetchAppliedJobs,
-  applyToJob,
-} from "../../redux/actions/jobActions";
+import { useFetchJobs } from "../../utils/hooks";
+import { useSelector } from "react-redux";
 
 const JobListing = () => {
   const [filters, setFilters] = useState({ skill: "", location: "" });
   const { user } = useSelector((state) => state.user);
   const userRole = user?.role;
-  const dispatch = useDispatch();
-  const { jobs, appliedJobs, loading } = useSelector((state) => state.jobs);
 
-  useEffect(() => {
-    dispatch(fetchJobs());
-    if (userRole === "freelancer") {
-      dispatch(fetchAppliedJobs(user._id));
-    }
-  }, [dispatch, userRole, user?._id]);
+  const { jobs, appliedJobs, loading } = useFetchJobs(userRole, user?._id);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -36,8 +25,8 @@ const JobListing = () => {
   };
 
   const handleJobClick = async (job) => {
-    if (userRole === "freelancer" && !job.applied) {
-      dispatch(applyToJob(job._id, user._id));
+    if (userRole !== "employer") {
+      // Handle job click logic here
     }
   };
 

@@ -18,24 +18,27 @@ import {
   ErrorBoundary,
   ApplicantProfile,
 } from "./components";
+import { useSelector } from "react-redux";
 
 const App = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const isAuthenticated = !!user;
+  const { user, isAuthenticated } = useSelector((state) => state.user);
 
   return (
     <Router>
       <ErrorBoundary>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="*" element={<Navigate to="/" />} />
-          {isAuthenticated && (
+
+          {/* Protected Routes */}
+          {isAuthenticated ? (
             <Route element={<AuthenticatedLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/profile/:id" element={<ApplicantProfile />} />
+
               {user.role === "freelancer" && (
                 <Route path="/jobListing" element={<JobListing />} />
               )}
@@ -50,7 +53,12 @@ const App = () => {
                   />
                 </>
               )}
+
+              {/* Default Redirect for Unmatched Routes */}
+              {/* <Route path="*" element={<Navigate to="/dashboard" />} /> */}
             </Route>
+          ) : (
+            <Route path="*" element={<Navigate to="/" />} />
           )}
         </Routes>
       </ErrorBoundary>

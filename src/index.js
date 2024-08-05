@@ -4,16 +4,19 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
-import store from "./redux/store";
+import { store, persistor } from "./redux/store";
 import ThemeContextProvider from "./context/ThemeContext";
+import { PersistGate } from "redux-persist/integration/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <ThemeContextProvider ThemeContextProvider>
-        <App />
-      </ThemeContextProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeContextProvider>
+          <App />
+        </ThemeContextProvider>
+      </PersistGate>
     </Provider>
     ,
   </React.StrictMode>

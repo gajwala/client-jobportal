@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import axiosInstance from "../utils/axiosInstance";
 import Loader from "./common/Loader";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { updateProfile, fetchUserProfile } from "../redux/actions/userActions";
 
 const UserProfile = () => {
-  const userId = JSON.parse(localStorage.getItem("user"))?._id;
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
+  const userId = user?._id;
   const [repos, setRepos] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,13 +24,14 @@ const UserProfile = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
-      name: "",
-      contactInfo: "",
-      skills: "",
-      githubProfile: "",
+      email: user?.email || "",
+      name: user?.name || "",
+      contactInfo: user?.contactInfo || "",
+      skills: user?.skills.join(", ") || "",
+      githubProfile: user?.githubProfile || "",
     },
     validationSchema,
+    enableReinitialize: true,
     onSubmit: async (values) => {
       try {
         setLoading(true);
@@ -36,10 +40,15 @@ const UserProfile = () => {
           .split(",")
           .map((skill) => skill.trim())
           .filter((skill) => skill !== "");
-        await axiosInstance.patch(`/users/${userId}`, {
-          ...values,
-          skills: skillsArray,
-        });
+        await dispatch(
+          updateProfile(
+            {
+              ...values,
+              skills: skillsArray,
+            },
+            userId
+          )
+        );
         setLoading(false);
         console.log("Profile saved successfully");
       } catch (error) {
@@ -50,26 +59,16 @@ const UserProfile = () => {
   });
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
+    const fetchProfile = async () => {
+      if (userId) {
         setLoading(true);
-        const response = await axiosInstance.get(`/users/${userId}`);
-        formik.setValues({
-          ...response.data,
-          skills: response.data.skills.join(", "), // Convert array to comma-separated string
-        });
+        await dispatch(fetchUserProfile(userId));
         setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.error("Failed to fetch user profile", error);
       }
     };
 
-    if (userId) {
-      fetchUserProfile();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+    fetchProfile();
+  }, [dispatch, userId]);
 
   const handleFetchRepos = async () => {
     setLoading(true);

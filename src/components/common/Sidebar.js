@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BiMenu } from "react-icons/bi";
 import sidebarRoutes from "../../utils/sidebarRoutes"; // Import the routes configuration
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/actions/userActions";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user")); // Get the user role from localStorage
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    dispatch(logout());
     navigate("/");
   };
 

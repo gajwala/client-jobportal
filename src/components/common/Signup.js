@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-// import { registerUser } from "../../redux/reducers/authReducer";
-import "../../styles/signup.css"; // Import the CSS file
+import "../../styles/signup.css";
 import useForm from "../../Hooks/useForm";
-import { registerUser } from "../../redux/actions/authActions";
+import { registerUser } from "../../redux/actions/userActions";
+import Loader from "./Loader";
 
 const Signup = () => {
   const [formData, handleChange] = useForm({
@@ -14,6 +14,8 @@ const Signup = () => {
   });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -21,15 +23,19 @@ const Signup = () => {
     setIsSubmitting(true);
     e.preventDefault();
     try {
+      setLoading(true);
       await dispatch(registerUser(formData));
-      navigate("/");
+      setLoading(false);
+      navigate("/login");
     } catch (err) {
+      setLoading(false);
       setError("Registration failed. Please try again.");
     }
   };
 
   return (
     <div className="signup-container bg-cover bg-center">
+      {loading && <Loader />}
       <div className="signup-overlay"></div>
       <form className="signup-form" onSubmit={handleSubmit}>
         <h1 className="signup-title">Signup</h1>

@@ -1,7 +1,9 @@
 import React from "react";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 function JobCard({
+  _id,
   title,
   companyName,
   experience,
@@ -11,8 +13,14 @@ function JobCard({
   applications,
   onClick,
   descriptionFile,
+  appliedJobs = [],
+  isApplied = false,
 }) {
-  const userRole = JSON.parse(localStorage.getItem("user"))?.role;
+  const { user } = useSelector((state) => state.user);
+  const userRole = user?.role;
+  if (userRole !== "employer") {
+    isApplied = appliedJobs.some((appliedJob) => appliedJob._id === _id);
+  }
 
   return (
     <div className="mb-6 sm:mb-4">
@@ -48,8 +56,13 @@ function JobCard({
             <button
               onClick={onClick}
               className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-10 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900"
+              disabled={isApplied}
             >
-              {userRole === "employer" ? "Check Applicants" : "Apply"}
+              {userRole === "employer"
+                ? "Check Applicants"
+                : isApplied
+                ? "APPLIED"
+                : "Apply"}
             </button>
             {descriptionFile && (
               <a

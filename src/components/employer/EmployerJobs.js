@@ -1,27 +1,22 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEmployerJobs } from "../../redux/actions/jobActions";
 import ApplicantsList from "./ApplicantsList";
 import JobCard from "../common/JobCard";
-import axiosInstance from "../../utils/axiosInstance";
 import Loader from "../common/Loader";
 
 const EmployerJobs = () => {
-  const [loading, setLoading] = useState(false);
-  const [jobs, setJobs] = useState([]);
+  const dispatch = useDispatch();
+  const { employerJobs, loading } = useSelector((state) => state.jobs);
+  const { user } = useSelector((state) => state.user);
   const [selectedJob, setSelectedJob] = useState(null);
-  console.log(jobs);
+
   useEffect(() => {
-    setLoading(true);
-    axiosInstance
-      .get(`/jobs/postedBy/${JSON.parse(localStorage.getItem("user"))?._id}`) // Fetch jobs posted by the employer
-      .then((response) => {
-        setJobs(response.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
+    if (user?._id) {
+      dispatch(fetchEmployerJobs(user._id));
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleJobClick = (job) => {
@@ -42,8 +37,8 @@ const EmployerJobs = () => {
           />
         ) : (
           <div>
-            {jobs.length > 0 ? (
-              jobs.map((job) => (
+            {employerJobs?.length > 0 ? (
+              employerJobs.map((job) => (
                 <JobCard
                   key={job?.["_id"]}
                   {...job}

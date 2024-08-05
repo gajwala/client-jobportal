@@ -1,11 +1,13 @@
 import React from "react";
 import { FaBriefcase, FaEdit, FaUser } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-  const role = JSON.parse(localStorage.getItem("user"))?.role;
-  const id = JSON.parse(localStorage.getItem("user"))?._id;
+  const { user } = useSelector((state) => state.user);
 
+  const role = user?.role;
+  const id = user?._id;
   const dashboardCardsForEmployer = [
     {
       title: "My Job Postings",

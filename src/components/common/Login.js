@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../redux/actions/authActions";
+import { loginUser } from "../../redux/actions/userActions";
 import "../../styles/login.css"; // Make sure this CSS file is updated
 import useForm from "../../Hooks/useForm";
+import Loader from "./Loader";
 
 const Login = () => {
   const [formData, handleChange] = useForm({
@@ -13,6 +14,8 @@ const Login = () => {
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -20,18 +23,22 @@ const Login = () => {
     setIsSubmitting(true);
     e.preventDefault();
     try {
+      setLoading(true);
       await dispatch(
         loginUser({ email: formData.email, password: formData.password })
       );
+      setLoading(false);
       navigate("/dashboard");
     } catch (err) {
       setIsSubmitting(false);
+      setLoading(true);
       setError("Invalid credentials");
     }
   };
 
   return (
     <div className="login-container bg-cover bg-center">
+      {loading && <Loader />}
       <div className="login-overlay"></div>
       <form className="login-form" onSubmit={handleSubmit}>
         <h1 className="login-title">Login</h1>
