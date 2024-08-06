@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 
-const JobCreateStepper = () => {
+const CreateJob = () => {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.user);
   const [currentStep, setCurrentStep] = useState(1);
@@ -414,4 +414,4 @@ const JobCreateStepper = () => {
   );
 };
 
-export default JobCreateStepper;
+export default CreateJob;

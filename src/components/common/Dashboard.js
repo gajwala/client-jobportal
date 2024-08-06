@@ -22,12 +22,6 @@ const Dashboard = () => {
       icon: <FaEdit fontSize={"2rem"} className="mr-4" />,
       route: "/create-job",
     },
-    {
-      title: "View Applicant Profiles",
-      desc: "View all the applicants along with their profiles",
-      icon: <FaUser fontSize={"2rem"} className="mr-4" />,
-      route: "/profile",
-    },
   ];
 
   const dashboardCardsForFreelancer = [

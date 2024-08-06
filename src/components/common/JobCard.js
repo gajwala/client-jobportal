@@ -92,7 +92,7 @@ function JobCard({
             {userRole !== EMPLOYER_ROLE && (
               <button
                 onClick={onClick}
-                className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900 transition-colors duration-300 lg:px-6 lg:py-3 lg:text-base w-full md:w-auto"
+                className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900 transition-colors duration-300 lg:px-6 lg:py-3 lg:text-base w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed "
                 disabled={isApplied}
               >
                 {isApplied ? "APPLIED" : "Apply"}

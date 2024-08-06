@@ -13,11 +13,11 @@ import {
 const sidebarRoutes = (role) => {
   const commonRoutes = [
     { path: DASHBOARD_PATH, label: "Dashboard", icon: <BiHome /> },
-    { path: PROFILE_PATH, label: "Update Profile", icon: <BiEdit /> },
   ];
 
   const freelancerRoutes = [
     { path: JOB_LISTING_PATH, label: "Job Listing", icon: <BiListUl /> },
+    { path: PROFILE_PATH, label: "Update Profile", icon: <BiEdit /> },
   ];
 
   const employerRoutes = [
