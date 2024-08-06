@@ -4,6 +4,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import Loader from "../common/Loader";
 import { FaUser } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { EMPLOYER_ROLE } from "../../utils/constant";
 
 export default function ApplicantProfile() {
   const { id } = useParams();
@@ -41,7 +42,7 @@ export default function ApplicantProfile() {
           <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
             User Profile
           </h1>
-          {user?.role === "employer" && (
+          {user?.role === EMPLOYER_ROLE && (
             <button
               onClick={backRouteHandler}
               className="mb-4 text-blue-500 hover:underline dark:text-blue-400"

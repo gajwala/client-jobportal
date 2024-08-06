@@ -1,7 +1,7 @@
 import React from "react";
 import { FaUser } from "react-icons/fa";
 
-const ViewProfile = (props) => {
+const ViewProfile = () => {
   return (
     <div>
       <div className="flex" style={{ alignItems: "center" }}>

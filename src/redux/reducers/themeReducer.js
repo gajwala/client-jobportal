@@ -1,6 +1,6 @@
 // src/redux/reducers/themeReducer.js
 
-import { TOGGLE_THEME } from "../actions/themeActions";
+import { TOGGLE_THEME } from "../constant";
 
 const initialState = {
   isDarkMode: false,

@@ -5,12 +5,13 @@ import "../../styles/signup.css";
 import useForm from "../../Hooks/useForm";
 import { registerUser } from "../../redux/actions/userActions";
 import Loader from "./Loader";
+import { EMPLOYER_ROLE, FREELANCER } from "../../utils/constant";
 
 const Signup = () => {
   const [formData, handleChange] = useForm({
     email: "",
     password: "",
-    role: "freelancer",
+    role: FREELANCER,
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,8 +73,8 @@ const Signup = () => {
           onChange={handleChange}
           required
         >
-          <option value="freelancer">Freelancer</option>
-          <option value="employer">Employer</option>
+          <option value={FREELANCER}>Freelancer</option>
+          <option value={EMPLOYER_ROLE}>Employer</option>
         </select>
         <button type="submit" className="signup-button">
           Signup

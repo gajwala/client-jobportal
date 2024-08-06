@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import Loader from "./common/Loader";
+import Loader from "./Loader";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { updateProfile, fetchUserProfile } from "../redux/actions/userActions";
+import { toast } from "react-toastify";
+import {
+  updateProfile,
+  fetchUserProfile,
+} from "../../redux/actions/userActions";
 
 const UserProfile = () => {
   const dispatch = useDispatch();
@@ -13,12 +17,24 @@ const UserProfile = () => {
   const [repos, setRepos] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [newSkill, setNewSkill] = useState(""); // State for new skill input
+
+  const skills = [
+    "React",
+    "Node.js",
+    "JavaScript",
+    "Python",
+    "CSS",
+    "HTML",
+    "Ruby",
+    "PHP",
+  ]; // Example skills
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Required"),
     name: Yup.string(),
     contactInfo: Yup.string(),
-    skills: Yup.string(),
+    skills: Yup.array().of(Yup.string()).required("Required"),
     githubProfile: Yup.string(),
   });
 
@@ -27,7 +43,7 @@ const UserProfile = () => {
       email: user?.email || "",
       name: user?.name || "",
       contactInfo: user?.contactInfo || "",
-      skills: user?.skills.join(", ") || "",
+      skills: user?.skills || [],
       githubProfile: user?.githubProfile || "",
     },
     validationSchema,
@@ -35,25 +51,20 @@ const UserProfile = () => {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        // Convert skills to array and trim any extra spaces
-        const skillsArray = values.skills
-          .split(",")
-          .map((skill) => skill.trim())
-          .filter((skill) => skill !== "");
         await dispatch(
           updateProfile(
             {
               ...values,
-              skills: skillsArray,
+              skills: values.skills, // Already an array
             },
             userId
           )
         );
         setLoading(false);
-        console.log("Profile saved successfully");
+        toast.success("Profile saved successfully!");
       } catch (error) {
         setLoading(false);
-        console.error("Failed to save profile", error);
+        toast.error("Failed to save profile. Please try again.");
       }
     },
   });
@@ -94,6 +105,13 @@ const UserProfile = () => {
     }
   };
 
+  const handleAddSkill = () => {
+    if (newSkill && !formik.values.skills.includes(newSkill)) {
+      formik.setFieldValue("skills", [...formik.values.skills, newSkill]);
+      setNewSkill(""); // Clear input field
+    }
+  };
+
   return (
     <div className="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen p-6 sm:p-12 w-full">
       {loading && <Loader />}
@@ -101,23 +119,6 @@ const UserProfile = () => {
         <h1 className="text-3xl font-bold mb-6">User Profile</h1>
         <form onSubmit={formik.handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label htmlFor="name" className="block mb-2 text-sm font-medium">
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-3 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              />
-              {formik.touched.name && formik.errors.name && (
-                <p className="text-red-500">{formik.errors.name}</p>
-              )}
-            </div>
             <div>
               <label htmlFor="email" className="block mb-2 text-sm font-medium">
                 Email
@@ -131,9 +132,28 @@ const UserProfile = () => {
                 onBlur={formik.handleBlur}
                 className="w-full p-3 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
-              {formik.touched.email && formik.errors.email && (
-                <p className="text-red-500">{formik.errors.email}</p>
-              )}
+              {formik.touched.email && formik.errors.email ? (
+                <div className="text-red-500 text-sm">
+                  {formik.errors.email}
+                </div>
+              ) : null}
+            </div>
+            <div>
+              <label htmlFor="name" className="block mb-2 text-sm font-medium">
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-3 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
+              {formik.touched.name && formik.errors.name ? (
+                <div className="text-red-500 text-sm">{formik.errors.name}</div>
+              ) : null}
             </div>
             <div>
               <label
@@ -151,9 +171,40 @@ const UserProfile = () => {
                 onBlur={formik.handleBlur}
                 className="w-full p-3 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
-              {formik.touched.contactInfo && formik.errors.contactInfo && (
-                <p className="text-red-500">{formik.errors.contactInfo}</p>
-              )}
+              {formik.touched.contactInfo && formik.errors.contactInfo ? (
+                <div className="text-red-500 text-sm">
+                  {formik.errors.contactInfo}
+                </div>
+              ) : null}
+            </div>
+            <div>
+              <label
+                htmlFor="githubProfile"
+                className="block mb-2 text-sm font-medium"
+              >
+                GitHub Profile
+              </label>
+              <input
+                type="text"
+                id="githubProfile"
+                name="githubProfile"
+                value={formik.values.githubProfile}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-3 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
+              {formik.touched.githubProfile && formik.errors.githubProfile ? (
+                <div className="text-red-500 text-sm">
+                  {formik.errors.githubProfile}
+                </div>
+              ) : null}
+              <button
+                type="button"
+                onClick={handleFetchRepos}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+              >
+                Fetch Repositories
+              </button>
             </div>
             <div>
               <label
@@ -162,44 +213,56 @@ const UserProfile = () => {
               >
                 Skills
               </label>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {formik.values.skills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm font-medium mb-2"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
               <input
                 type="text"
-                id="skills"
-                name="skills"
-                value={formik.values.skills}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                placeholder="Enter your skills separated by commas"
-                className="w-full p-3 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              />
-            </div>
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="githubProfile"
-              className="block mb-2 text-sm font-medium"
-            >
-              GitHub Username
-            </label>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center">
-              <input
-                type="text"
-                id="githubProfile"
-                name="githubProfile"
-                value={formik.values.githubProfile}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full sm:w-3/4 p-3 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                id="newSkill"
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+                placeholder="Add a new skill"
+                className="w-full p-3 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2"
               />
               <button
                 type="button"
-                onClick={handleFetchRepos}
-                className="mt-2 sm:mt-0 sm:ml-4 w-full sm:w-1/4 p-3 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+                onClick={handleAddSkill}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
               >
-                Fetch Repos
+                Add Skill
               </button>
+              <label className="block mt-4">Select Your Skills</label>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => {
+                      if (!formik.values.skills.includes(skill)) {
+                        formik.setFieldValue("skills", [
+                          ...formik.values.skills,
+                          skill,
+                        ]);
+                      }
+                    }}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      formik.values.skills.includes(skill)
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                    } hover:bg-blue-400 dark:hover:bg-gray-600`}
+                  >
+                    {skill}
+                  </button>
+                ))}
+              </div>
             </div>
-            {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
           <button
             type="submit"
@@ -232,6 +295,7 @@ const UserProfile = () => {
                 No repositories found.
               </p>
             )}
+            {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
         </form>
       </div>

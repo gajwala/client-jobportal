@@ -1,6 +1,6 @@
 // src/redux/reducers/userReducer.js
 
-import { LOGIN_SUCCESS, LOGOUT, UPDATE_PROFILE } from "../actions/userActions";
+import { LOGIN_SUCCESS, LOGOUT, UPDATE_PROFILE } from "../constant";
 
 const initialState = {
   user: null,

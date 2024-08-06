@@ -1,10 +1,7 @@
 // src/redux/actions/userActions.js
 
 import axiosInstance from "../../utils/axiosInstance";
-
-export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
-export const LOGOUT = "LOGOUT";
-export const UPDATE_PROFILE = "UPDATE_PROFILE";
+import { LOGOUT, UPDATE_PROFILE } from "../constant";
 
 // Action to handle logout
 export const logout = () => (dispatch) => {

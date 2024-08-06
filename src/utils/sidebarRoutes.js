@@ -1,24 +1,33 @@
 import React from "react";
 import { BiHome, BiListUl, BiBriefcase, BiEdit } from "react-icons/bi";
+import {
+  CREATE_JOB_PATH,
+  DASHBOARD_PATH,
+  EMPLOYER_JOBS_PATH,
+  EMPLOYER_ROLE,
+  FREELANCER,
+  JOB_LISTING_PATH,
+  PROFILE_PATH,
+} from "./constant";
 
 const sidebarRoutes = (role) => {
   const commonRoutes = [
-    { path: "/dashboard", label: "Dashboard", icon: <BiHome /> },
-    { path: "/profile", label: "Update Profile", icon: <BiEdit /> },
+    { path: DASHBOARD_PATH, label: "Dashboard", icon: <BiHome /> },
+    { path: PROFILE_PATH, label: "Update Profile", icon: <BiEdit /> },
   ];
 
   const freelancerRoutes = [
-    { path: "/jobListing", label: "Job Listing", icon: <BiListUl /> },
+    { path: JOB_LISTING_PATH, label: "Job Listing", icon: <BiListUl /> },
   ];
 
   const employerRoutes = [
-    { path: "/employer-jobs", label: "My Jobs", icon: <BiBriefcase /> },
-    { path: "/create-job", label: "Create Job", icon: <BiEdit /> },
+    { path: EMPLOYER_JOBS_PATH, label: "My Jobs", icon: <BiBriefcase /> },
+    { path: CREATE_JOB_PATH, label: "Create Job", icon: <BiEdit /> },
   ];
 
-  return role === "freelancer"
+  return role === FREELANCER
     ? [...commonRoutes, ...freelancerRoutes]
-    : role === "employer"
+    : role === EMPLOYER_ROLE
     ? [...commonRoutes, ...employerRoutes]
     : commonRoutes;
 };

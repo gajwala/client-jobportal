@@ -2,6 +2,7 @@ import React from "react";
 import { FaBriefcase, FaEdit, FaUser } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { EMPLOYER_ROLE } from "../../utils/constant";
 
 const Dashboard = () => {
   const { user } = useSelector((state) => state.user);
@@ -51,7 +52,7 @@ const Dashboard = () => {
   ];
 
   const dashoboardCards =
-    role === "employer"
+    role === EMPLOYER_ROLE
       ? dashboardCardsForEmployer
       : dashboardCardsForFreelancer;
 

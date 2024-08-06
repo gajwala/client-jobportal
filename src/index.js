@@ -7,6 +7,8 @@ import { Provider } from "react-redux";
 import { store, persistor } from "./redux/store";
 import ThemeContextProvider from "./context/ThemeContext";
 import { PersistGate } from "redux-persist/integration/react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -15,6 +17,7 @@ root.render(
       <PersistGate loading={null} persistor={persistor}>
         <ThemeContextProvider>
           <App />
+          <ToastContainer />
         </ThemeContextProvider>
       </PersistGate>
     </Provider>

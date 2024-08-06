@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "./common/Sidebar";
-import Navbar from "./common/Navbar";
-import Footer from "./common/Footer";
+import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 const AuthenticatedLayout = () => {
   return (

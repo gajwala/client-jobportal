@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
 
 const JobCreateStepper = () => {
   const dispatch = useDispatch();
@@ -10,8 +11,6 @@ const JobCreateStepper = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [addSkill, setAddSkill] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
 
   const skills = [
     "React",
@@ -38,6 +37,7 @@ const JobCreateStepper = () => {
       phone: "",
       file: null,
       requirements: "",
+      salaryRateForHour: "",
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Job title is required"),
@@ -47,6 +47,7 @@ const JobCreateStepper = () => {
       experience: Yup.string().required("Experience is required"),
       location: Yup.string().required("Location is required"),
       address: Yup.string().required("Address is required"),
+      salaryRateForHour: Yup.string().required("SalaryRateForHour is required"),
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
@@ -75,11 +76,10 @@ const JobCreateStepper = () => {
         formik.resetForm();
         setSelectedSkills([]);
         setCurrentStep(1); // Reset to first step after submission
-        setMessage("Job created successfully!");
+        toast.success("Job created successfully!");
       } catch (error) {
-        console.error("Error creating job:", error);
         dispatch({ type: "CREATE_JOB_FAILURE", payload: error.response.data });
-        setError("An error occurred while creating the job.");
+        toast.error("An error occurred while creating the job.");
       }
     },
   });
@@ -95,11 +95,10 @@ const JobCreateStepper = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile && selectedFile.size > 16384) {
-      setError("File size exceeds 16KB limit.");
+      toast.error("File size exceeds 16KB limit.");
       formik.setFieldValue("file", null);
     } else {
       formik.setFieldValue("file", selectedFile);
-      setError("");
     }
   };
 
@@ -171,29 +170,14 @@ const JobCreateStepper = () => {
                 onChange={handleFileChange}
                 className="block w-full text-sm text-gray-900 dark:text-white file:py-2 file:px-4 file:mr-4 file:rounded-md file:border file:border-gray-300 dark:file:border-gray-600 file:bg-gray-50 dark:file:bg-gray-700 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 dark:file:text-blue-300 dark:hover:file:bg-blue-600"
               />
-              <button
-                type="button"
-                onClick={() =>
-                  handleFileChange({ target: { files: [formik.values.file] } })
-                }
-                className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-              >
-                Upload
-              </button>
             </div>
-            {error && <p className="text-red-500 mt-2">{error}</p>}
-            {message && (
-              <p className="mt-4 text-center text-green-500 dark:text-green-300">
-                {message}
-              </p>
-            )}
           </div>
         );
       case 2:
         return (
           <div className="mb-4">
             <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-              Create Job - Enter job requirements
+              Create Job - Enter job requirements and Salary
             </h1>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">
               Job Requirements
@@ -202,10 +186,25 @@ const JobCreateStepper = () => {
               name="requirements"
               value={formik.values.requirements}
               onChange={formik.handleChange}
-              className="w-full h-64 p-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             />
             {formik.errors.requirements && (
               <p className="text-red-500 mt-2">{formik.errors.requirements}</p>
+            )}
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              SalaryRateForHour
+            </label>
+            <input
+              type="text"
+              name="salaryRateForHour"
+              value={formik.values.salaryRateForHour}
+              onChange={formik.handleChange}
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+            />
+            {formik.errors.salaryRateForHour && (
+              <p className="text-red-500 mt-2">
+                {formik.errors.salaryRateForHour}
+              </p>
             )}
           </div>
         );

@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import JobCard from "../common/JobCard";
 import Loader from "../common/Loader";
@@ -13,9 +7,16 @@ import {
   fetchAppliedJobs,
   applyToJob,
 } from "../../redux/actions/jobActions";
-
+import { FREELANCER } from "../../utils/constant";
+import useFilteredJobs from "../../Hooks/useFilteredJobs"; // Adjust the path as necessary
+import { toast } from "react-toastify";
 const JobListing = () => {
-  const [filters, setFilters] = useState({ skill: "", location: "" });
+  const [filters, setFilters] = useState({
+    skill: "",
+    location: "",
+    minRate: "",
+    maxRate: "",
+  });
   const observer = useRef();
   const { user } = useSelector((state) => state.user);
   const { jobs, appliedJobs, loading, page, hasMore } = useSelector(
@@ -26,7 +27,7 @@ const JobListing = () => {
 
   useEffect(() => {
     dispatch(fetchJobs());
-    if (userRole === "freelancer") {
+    if (userRole === FREELANCER) {
       dispatch(fetchAppliedJobs(user._id));
     }
   }, [dispatch, userRole, user?._id]);
@@ -40,28 +41,17 @@ const JobListing = () => {
   };
 
   const handleClearFilters = () => {
-    setFilters({ skill: "", location: "" });
+    setFilters({ skill: "", location: "", minRate: "", maxRate: "" });
   };
 
   const handleJobClick = (job) => {
-    if (userRole === "freelancer" && !job.applied) {
+    if (userRole === FREELANCER && !job.applied) {
       dispatch(applyToJob(job._id, user._id));
+      toast.success("Job Applied successfully!");
     }
   };
 
-  const filteredJobs = useMemo(() => {
-    return jobs.filter((job) => {
-      const matchesSkill =
-        !filters.skill ||
-        job.skills.some((skill) =>
-          skill.toLowerCase().includes(filters.skill.toLowerCase())
-        );
-      const matchesLocation =
-        !filters.location ||
-        job.location.toLowerCase().includes(filters.location.toLowerCase());
-      return matchesSkill && matchesLocation;
-    });
-  }, [jobs, filters]);
+  const filteredJobs = useFilteredJobs(jobs, filters);
 
   const loadMoreJobs = useCallback(() => {
     if (hasMore && !loading) {
@@ -104,6 +94,22 @@ const JobListing = () => {
             value={filters.location}
             onChange={handleFilterChange}
             className="p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          />
+          <input
+            type="number"
+            name="minRate"
+            placeholder="Min rate"
+            value={filters.minRate}
+            onChange={handleFilterChange}
+            className="p-2 w-16 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          />
+          <input
+            type="number"
+            name="maxRate"
+            placeholder="Max rate"
+            value={filters.maxRate}
+            onChange={handleFilterChange}
+            className="p-2 w-16 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           />
           <button
             onClick={handleClearFilters}

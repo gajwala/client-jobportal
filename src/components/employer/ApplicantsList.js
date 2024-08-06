@@ -3,7 +3,7 @@ import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const ApplicantsList = ({ job, onBack }) => {
+const ApplicantsList = () => {
   const { applicants } = useSelector((state) => state.jobs);
   const navigate = useNavigate();
 
@@ -11,10 +11,17 @@ const ApplicantsList = ({ job, onBack }) => {
     navigate(`/profile/${id}`);
   };
 
+  const backRouteHandler = () => {
+    navigate("/employer-jobs");
+  };
+
   return (
     <div className="flex-grow flex items-center justify-center p-4">
       <div className="w-full max-w-4xl p-4">
-        <button onClick={onBack} className="mb-4 text-blue-500 hover:underline">
+        <button
+          onClick={backRouteHandler}
+          className="mb-4 text-blue-500 hover:underline"
+        >
           Back to Jobs
         </button>
         {/* <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
