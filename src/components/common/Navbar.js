@@ -12,7 +12,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
     dispatch(logout());
     navigate("/");
   };

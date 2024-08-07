@@ -85,7 +85,6 @@ export const fetchApplicants = (jobId) => async (dispatch) => {
 
   try {
     const response = await axiosInstance.get(`/applications/${jobId}`);
-    console.log(response.data);
     dispatch({
       type: FETCH_APPLICANTS_SUCCESS,
       payload: response.data,

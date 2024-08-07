@@ -1,8 +1,8 @@
 import React from "react";
 import moment from "moment";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchApplicants } from "../../redux/actions/jobActions";
+
 import { EMPLOYER_ROLE } from "../../utils/constant";
 
 function JobCard({
@@ -22,7 +22,7 @@ function JobCard({
 }) {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+
   const userRole = user?.role;
 
   if (userRole !== EMPLOYER_ROLE) {
@@ -37,7 +37,6 @@ function JobCard({
   };
 
   const checkApplicantHandler = (jobId) => {
-    dispatch(fetchApplicants(jobId));
     navigate(`/employer/job/${jobId}/applicants`);
   };
 
@@ -84,6 +83,7 @@ function JobCard({
             {userRole === EMPLOYER_ROLE && (
               <button
                 onClick={() => checkApplicantHandler(_id)}
+                disabled={!applications?.length}
                 className="text-blue-500 dark:text-blue-300 border border-blue-500 dark:border-blue-300 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white dark:hover:bg-blue-300 dark:hover:text-gray-900 transition-colors duration-300 lg:px-6 lg:py-3 lg:text-base w-full md:w-auto"
               >
                 Check Applicants

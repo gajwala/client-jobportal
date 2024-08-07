@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaUser } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchApplicants } from "../../redux/actions/jobActions";
+import Loader from "../common/Loader";
 
 const ApplicantsList = () => {
-  const { applicants } = useSelector((state) => state.jobs);
+  const { applicants, loading } = useSelector((state) => state.jobs);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { jobId } = useParams();
 
   const viewProfilehandler = (id) => {
     navigate(`/profile/${id}`);
   };
+
+  useEffect(() => {
+    if (jobId) {
+      dispatch(fetchApplicants(jobId));
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, jobId);
 
   const backRouteHandler = () => {
     navigate("/employer-jobs");
@@ -17,6 +29,7 @@ const ApplicantsList = () => {
 
   return (
     <div className="flex-grow flex items-center justify-center p-4">
+      {loading && <Loader />}
       <div className="w-full max-w-4xl p-4">
         <button
           onClick={backRouteHandler}
