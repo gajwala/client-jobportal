@@ -2,26 +2,27 @@ import { useMemo } from "react";
 
 const useFilteredJobs = (jobs, filters) => {
   const filteredJobs = useMemo(() => {
+    // Extract filter values from refs
+    const skill = filters.skillRef?.current?.value || "";
+    const minRate = filters.minRateRef?.current?.value || "";
+    const maxRate = filters.maxRateRef?.current?.value || "";
+
+    // If all filters are empty, return the full list of jobs
+    if (!skill && !minRate && !maxRate) {
+      return jobs;
+    }
+
     return jobs.filter((job) => {
       const ratePerHour = Number(
         job.salaryRateForHour.replace(/[^0-9.-]+/g, "")
       );
       const matchesSkill =
-        !filters.skill ||
-        job.skills.some((skill) =>
-          skill.toLowerCase().includes(filters.skill.toLowerCase())
-        );
-      const matchesLocation =
-        !filters.location ||
-        job.location.toLowerCase().includes(filters.location.toLowerCase());
-      const matchesMinRate =
-        !filters.minRate || ratePerHour >= Number(filters.minRate);
-      const matchesMaxRate =
-        !filters.maxRate || ratePerHour <= Number(filters.maxRate);
+        !skill ||
+        job.skills.some((s) => s.toLowerCase().includes(skill.toLowerCase()));
+      const matchesMinRate = !minRate || ratePerHour >= Number(minRate);
+      const matchesMaxRate = !maxRate || ratePerHour <= Number(maxRate);
 
-      return (
-        matchesSkill && matchesLocation && matchesMinRate && matchesMaxRate
-      );
+      return matchesSkill && matchesMinRate && matchesMaxRate;
     });
   }, [jobs, filters]);
 

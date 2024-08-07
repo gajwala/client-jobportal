@@ -71,9 +71,6 @@ const App = () => {
                   />
                 </>
               )}
-
-              {/* Default Redirect for Unmatched Routes */}
-              {/* <Route path="*" element={<Navigate to={DASHBOARD_PATH} />} /> */}
             </Route>
           ) : (
             <Route path="*" element={<Navigate to={DEFAULT_REDIRECT_PATH} />} />

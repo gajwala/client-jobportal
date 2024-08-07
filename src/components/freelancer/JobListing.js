@@ -8,22 +8,23 @@ import {
   applyToJob,
 } from "../../redux/actions/jobActions";
 import { FREELANCER } from "../../utils/constant";
-import useFilteredJobs from "../../Hooks/useFilteredJobs"; // Adjust the path as necessary
+import useFilteredJobs from "../../Hooks/useFilteredJobs";
 import { toast } from "react-toastify";
+
 const JobListing = () => {
-  const [filters, setFilters] = useState({
-    skill: "",
-    location: "",
-    minRate: "",
-    maxRate: "",
-  });
+  const skillRef = useRef("");
+  const minRateRef = useRef("");
+  const maxRateRef = useRef("");
   const observer = useRef();
+
   const { user } = useSelector((state) => state.user);
   const { jobs, appliedJobs, loading, page, hasMore } = useSelector(
     (state) => state.jobs
   );
   const userRole = user?.role;
   const dispatch = useDispatch();
+
+  const [, setFilterTrigger] = useState(0);
 
   useEffect(() => {
     dispatch(fetchJobs());
@@ -32,16 +33,16 @@ const JobListing = () => {
     }
   }, [dispatch, userRole, user?._id]);
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value,
-    }));
+  const handleFilterChange = () => {
+    // Trigger re-render when filters change
+    setFilterTrigger((prev) => prev + 1);
   };
 
   const handleClearFilters = () => {
-    setFilters({ skill: "", location: "", minRate: "", maxRate: "" });
+    skillRef.current.value = "";
+    minRateRef.current.value = "";
+    maxRateRef.current.value = "";
+    handleFilterChange();
   };
 
   const handleJobClick = (job) => {
@@ -51,7 +52,11 @@ const JobListing = () => {
     }
   };
 
-  const filteredJobs = useFilteredJobs(jobs, filters);
+  const filteredJobs = useFilteredJobs(jobs, {
+    minRateRef,
+    maxRateRef,
+    skillRef,
+  });
 
   const loadMoreJobs = useCallback(() => {
     if (hasMore && !loading) {
@@ -64,7 +69,13 @@ const JobListing = () => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+        if (
+          entries[0].isIntersecting &&
+          hasMore &&
+          !maxRateRef.current.value &&
+          !minRateRef.current.value &&
+          !skillRef.current.value
+        ) {
           loadMoreJobs();
         }
       });
@@ -82,32 +93,24 @@ const JobListing = () => {
           <input
             type="text"
             name="skill"
+            ref={skillRef}
             placeholder="Filter by skill"
-            value={filters.skill}
-            onChange={handleFilterChange}
-            className="p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-          />
-          <input
-            type="text"
-            name="location"
-            placeholder="Filter by location"
-            value={filters.location}
             onChange={handleFilterChange}
             className="p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           />
           <input
             type="number"
             name="minRate"
+            ref={minRateRef}
             placeholder="Min rate"
-            value={filters.minRate}
             onChange={handleFilterChange}
             className="p-2 w-16 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           />
           <input
             type="number"
             name="maxRate"
+            ref={maxRateRef}
             placeholder="Max rate"
-            value={filters.maxRate}
             onChange={handleFilterChange}
             className="p-2 w-16 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           />
