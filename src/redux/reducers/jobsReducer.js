@@ -23,6 +23,7 @@ const initialState = {
   page: 1,
   applicants: [],
   hasMore: true,
+  totalEmployerJobs: 0,
 };
 
 const jobsReducer = (state = initialState, action) => {
@@ -77,7 +78,15 @@ const jobsReducer = (state = initialState, action) => {
         loading: false,
       };
     case FETCH_EMPLOYER_JOBS_SUCCESS:
-      return { ...state, loading: false, employerJobs: action.payload };
+      return {
+        ...state,
+        employerJobs:
+          action.payload.page === 1
+            ? action.payload.jobs
+            : [...state.employerJobs, ...action.payload.jobs],
+        loading: false,
+        totalEmployerJobs: action.payload.totalEmployerJobs,
+      };
     default:
       return state;
   }
